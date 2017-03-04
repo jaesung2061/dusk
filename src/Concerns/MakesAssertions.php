@@ -64,6 +64,79 @@ trait MakesAssertions
     }
 
     /**
+     * Assert that a query string parameter is present and has a given value.
+     *
+     * @param  string  $name
+     * @param  string  $value
+     * @return $this
+     */
+    public function assertQueryStringHas($name, $value = null)
+    {
+        $output = $this->assertHasQueryStringParameter($name);
+
+        if (is_null($value)) {
+            return $this;
+        }
+
+        PHPUnit::assertEquals(
+            $value, $output[$name],
+            "Query string parameter [{$name}] had value [{$output[$name]}], but expected [{$value}]."
+        );
+
+        return $this;
+    }
+
+    /**
+     * Assert that the given query string parameter is missing.
+     *
+     * @param  string  $name
+     * @return $this
+     */
+    public function assertQueryStringMissing($name)
+    {
+        $parsedUrl = parse_url($this->driver->getCurrentURL());
+
+        if (! array_key_exists('query', $parsedUrl)) {
+            PHPUnit::assertTrue(true);
+            return $this;
+        }
+
+        parse_str($parsedUrl['query'], $output);
+
+        PHPUnit::assertArrayNotHasKey(
+            $name, $output,
+            "Found unexpected query string parameter [{$name}] in [".$this->driver->getCurrentURL()."]."
+        );
+
+        return $this;
+    }
+
+    /**
+     * Assert that the given query string parameter is present.
+     *
+     * @param  string  $name
+     * @return $this
+     */
+    protected function assertHasQueryStringParameter($name)
+    {
+        $parsedUrl = parse_url($this->driver->getCurrentURL());
+
+        PHPUnit::assertArrayHasKey(
+            'query', $parsedUrl,
+            "Did not see expected query string in [".$this->driver->getCurrentURL()."]."
+        );
+
+        parse_str($parsedUrl['query'], $output);
+
+        PHPUnit::assertArrayHasKey(
+            $name, $output,
+            "Did not see expected query string parameter [{$name}] in [".$this->driver->getCurrentURL()."]."
+        );
+
+        return $output;
+    }
+
+    /**
      * Assert that the given cookie is present.
      *
      * @param  string  $name
@@ -351,7 +424,7 @@ JS;
 
         return $this;
     }
-    
+
     /**
      * Assert that the given radio field is selected.
      *

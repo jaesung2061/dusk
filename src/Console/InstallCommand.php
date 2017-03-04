@@ -37,24 +37,56 @@ class InstallCommand extends Command
      */
     public function handle()
     {
-        if (! is_dir($this->generateTestsPath('Browser/Pages'))) {
-            mkdir($this->generateTestsPath('Browser/Pages'), 0755, true);
-        }
-
         if (! is_dir($this->generateTestsPath('Browser/screenshots'))) {
-            mkdir($this->generateTestsPath('Browser/screenshots'), 0755, true);
+            $this->createScreenshotsDirectory();
         }
 
-        copy(__DIR__.'/../../stubs/ExampleTest.stub', $this->generateTestsPath('Browser/ExampleTest.php'));
-        copy(__DIR__.'/../../stubs/HomePage.stub', $this->generateTestsPath('Browser/Pages/HomePage.php'));
-        copy(__DIR__.'/../../stubs/DuskTestCase.stub', $this->generateTestsPath('DuskTestCase.php'));
-        copy(__DIR__.'/../../stubs/Page.stub', $this->generateTestsPath('Browser/Pages/Page.php'));
+        if (! is_dir($this->generateTestsPath('Browser/console'))) {
+            $this->createConsoleDirectory();
+        }
+
+        $subs = [
+            'ExampleTest.stub' => $this->generateTestsPath('Browser/ExampleTest.php'),
+            'HomePage.stub' => $this->generateTestsPath('Browser/Pages/HomePage.php'),
+            'DuskTestCase.stub' => $this->generateTestsPath('DuskTestCase.php'),
+            'Page.stub' => $this->generateTestsPath('Browser/Pages/Page.php'),
+        ];
+
+        foreach ($subs as $stub => $file) {
+            if (! is_file($file)) {
+                copy(__DIR__.'/../../stubs/'.$stub, $file);
+            }
+        }
+
+        $this->info('Dusk scaffolding installed successfully.');
+    }
+
+    /**
+     * Create the screenshots directory.
+     *
+     * @return void
+     */
+    protected function createScreenshotsDirectory()
+    {
+        mkdir($this->generateTestsPath('Browser/screenshots'), 0755, true);
 
         file_put_contents($this->generateTestsPath('Browser/screenshots/.gitignore'), '*
 !.gitignore
 ');
+    }
 
-        $this->info('Dusk scaffolding installed successfully.');
+    /**
+     * Create the console directory.
+     *
+     * @return void
+     */
+    protected function createConsoleDirectory()
+    {
+        mkdir($this->generateTestsPath('Browser/console'), 0755, true);
+
+        file_put_contents($this->generateTestsPath('Browser/console/.gitignore'), '*
+!.gitignore
+');
     }
 
     protected function generateTestsPath($path)
