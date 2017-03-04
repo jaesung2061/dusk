@@ -86,7 +86,7 @@ class DuskCommand extends Command
      */
     protected function phpunitArguments($options)
     {
-        return array_merge(['-c', base_path('phpunit.dusk.xml')], $options);
+        return array_merge(['-c', cms_path('phpunit.dusk.xml')], $options);
     }
 
     /**
@@ -173,7 +173,7 @@ class DuskCommand extends Command
      */
     protected function writeConfiguration()
     {
-        if (! file_exists($file = base_path('phpunit.dusk.xml'))) {
+        if (! file_exists($file = cms_path('phpunit.dusk.xml'))) {
             copy(realpath(__DIR__.'/../../stubs/phpunit.xml'), $file);
         } else {
             $this->hasPhpUnitConfiguration = true;
@@ -188,7 +188,7 @@ class DuskCommand extends Command
     protected function removeConfiguration()
     {
         if (! $this->hasPhpUnitConfiguration) {
-            unlink(base_path('phpunit.dusk.xml'));
+            unlink(cms_path('phpunit.dusk.xml'));
         }
     }
 
