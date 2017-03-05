@@ -41,7 +41,7 @@ abstract class TestCase extends FoundationTestCase
 
         Browser::$storeScreenshotsAt = $this->generateTestsPath('Browser/screenshots');
 
-        Browser::$storeConsoleLogAt = base_path('tests/Browser/console');
+        Browser::$storeConsoleLogAt = cms_path('tests/Browser/console');
 
         Browser::$userResolver = function () {
             return $this->user();
